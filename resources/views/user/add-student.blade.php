@@ -1,5 +1,5 @@
 <div>
-    <form action="{{route('student-list')}}" method="post">
+    <form action="{{route('students-add')}}" method="post">
         @csrf
         <label for="name">Enter Name</label>
         <input type="name" name="name">
@@ -41,4 +41,7 @@
         <br>
         <input type="submit" value="Register">
     </form>
+        <a href="{{ route('students-list') }}">
+        <button>View Student</button>
+    </a>
 </div>
