@@ -17,19 +17,44 @@ class studentController extends Controller
 
     function show()
     {
-        $students =  Student::paginate(5);
+        $students =  Student::orderBy('id', 'desc')->paginate(5);
         return view('user.student-list', ['students' => $students]);
     }
 
     function store(Request $request)
     {
-        // dd($request);
+
+        $request->validate([
+            'name' => 'required|string|regex:/^[A-Za-z\s]+$/|max:255|min:3',
+            'email' => 'required|email|unique:students',
+            'gender' => 'required',
+            'dob' => 'required',
+            'country' => 'not_in:0',
+            'skills' => 'required|array|min:1',
+            'skills.*' => 'string',
+            'image' => 'required'
+        ], [
+            'name.required' => 'Student name is required!',
+            'name.string' => 'Student name should be a valid string!',
+            'name.regex' => 'Student name should contain only letters and spaces!',
+            'name.max' => 'Student name should have less than 255 character!',
+            'name.min' => 'Student name should have atleast 3 character!',
+            'skills.required' => 'Please select your department!',
+
+        ]);
+
         $student = new student();
         $student->name = $request->name;
         $student->email = $request->email;
         $student->gender = $request->gender;
-        $student->dob = $request->birthday;
+        $student->dob = $request->dob;
         $student->country = $request->country;
+        $student->skills = implode(',', $request->skills);
+
+        $image = $request->file('image');
+        $imagePath = $image->store('images', 'public');
+        $student->image = $imagePath;
+
         $student->save();
         return redirect()->route('students-list');
     }
@@ -50,6 +75,13 @@ class studentController extends Controller
         $student->gender = $request->gender;
         $student->dob = $request->birthday;
         $student->country = $request->country;
+        $skills = $request->has('skills') ? implode(',', $request->skills) : '';
+        $student->skills = $skills;
+
+        $image = $request->file('image');
+        $imagePath = $image->store('images', 'public');
+        $student->image = $imagePath;
+
         $student->save();
         return redirect()->route('students-list');
     }
@@ -73,5 +105,19 @@ class studentController extends Controller
         } else {
             echo "selected student not deleted";
         }
+    }
+
+    public function search(Request $request)
+    {
+        $searchTerm = $request->input('search');
+
+        $studentDetail = Student::where('name', 'like', "%{$searchTerm}%")->paginate(5);
+
+        return view('user.student-list', ['students' => $studentDetail]);
+    }
+
+    function uploadImg()
+    {
+        return "Image uploading";
     }
 }

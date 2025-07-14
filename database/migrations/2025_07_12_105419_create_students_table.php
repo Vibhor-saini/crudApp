@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('email');
             $table->string('gender');
             $table->date('dob')->nullable();
-            $table->date('created_at');
             $table->timestamps();
         });
     }
