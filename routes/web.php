@@ -12,5 +12,6 @@ Route::get('/students/edit/{id}', [StudentController::class,'edit'])->name('stud
 Route::post('/students/update/{id}', [StudentController::class,'update'])->name('students.update');
 Route::post('/delete-multi', [StudentController::class, 'deleteMultiple'])->name('students.deleteMulti');
 Route::get('/search', [StudentController::class,'search'])->name('students-search');
+Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
 
 

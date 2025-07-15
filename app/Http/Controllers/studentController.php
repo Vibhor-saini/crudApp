@@ -56,6 +56,7 @@ class studentController extends Controller
         $student->image = $imagePath;
 
         $student->save();
+        session()->flash('success', 'Student registered successfully!');
         return redirect()->route('students-list');
     }
 
@@ -78,11 +79,14 @@ class studentController extends Controller
         $skills = $request->has('skills') ? implode(',', $request->skills) : '';
         $student->skills = $skills;
 
-        $image = $request->file('image');
-        $imagePath = $image->store('images', 'public');
-        $student->image = $imagePath;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imagePath = $image->store('images', 'public');
+            $student->image = $imagePath;
+        }
 
         $student->save();
+        session()->flash('success', 'Student updated successfully!');
         return redirect()->route('students-list');
     }
 
@@ -91,7 +95,20 @@ class studentController extends Controller
         $isDeleted = Student::destroy($id);
 
         if ($isDeleted) {
+            session()->flash('success', 'Student delete successfully!');
             return redirect('list');
+        } else {
+            echo "Delete failed or student not found.";
+        }
+    }
+
+    public function destroy($id)
+    {
+        $isDeleted = Student::destroy($id);
+
+        if ($isDeleted) {
+            session()->flash('success', 'Student delete successfully!');
+            return redirect()->route('students-list')->with('success', 'Student deleted successfully!');
         } else {
             echo "Delete failed or student not found.";
         }
@@ -99,9 +116,11 @@ class studentController extends Controller
 
     function deleteMultiple(Request $request)
     {
+        // dd($request);
         $result = student::destroy($request->ids);
         if ($result) {
-            return redirect()->route('students-list');
+            session()->flash('success', 'Students deleted successfully!');
+             return redirect('list');
         } else {
             echo "selected student not deleted";
         }

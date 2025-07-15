@@ -1,59 +1,83 @@
-<h1>Update student</h1>
-<div>
+@extends('layouts.layout')
+
+@section('title', 'Students List')
+
+@section('content')
+
+<h1 class="mb-8 m-5">Update Student</h1>
+
+<div class="p-4 border rounded bg-light shadow-sm m-5">
+
     <form action="{{ route('students.update', $students->id) }}" enctype="multipart/form-data" method="post">
         @csrf
-        <img src="{{ asset('storage/' . $students->image) }}" width="100" height="100px" style="border-radius: 100%;"  alt="Student Image"><br><br>
-        <input type="file" name="image" id="image">
-        <br>
-        <br>
-        <label for="name">Enter Name</label>
-        <input type="name" name="name" value="{{$students->name}}">
-        <br>
-        <br>
-        <label for="email">Enter Email</label>
-        <input type="email" name="email" value="{{$students->email}}">
-        <br>
-        <br>
-        Select Gender
-        <br>
-        <label for="male">Male</label>
-        <input type="radio" name="gender" value="male" {{ $students->gender == 'male' ? 'checked' : '' }}>
-        <label for="female">Female</label>
-        <input type="radio" name="gender" value="female" {{ $students->gender == 'female' ? 'checked' : '' }}>
-        <br>
-        <br>
-        <label for="dob">DOB</label>
-        <input name="birthday" name="dob" type="date" value="{{$students->dob}}">
-        <br>
-        <br>
-        <label>
-            Select country
-        </label>
-        <select name="country">
-            <option hidden>Select</option>
-            @foreach($countries as $country)
-            <option value="{{ $country }}" {{ $students->country == $country ? 'selected' : '' }}>{{ $country }}</option>
-            @endforeach
-        </select>
-        <br>
-        <br>
+
+        <div class="mb-3">
+            <img src="{{ $students->image ? asset('storage/' . $students->image) : asset('storage/images/default.png') }}" width="100" height="100" class="rounded-circle mb-2" alt="Student Image"><br>
+            <label for="image" class="form-label">Update Image</label>
+            <input type="file" name="image" id="image" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Enter Name</label>
+            <input type="text" name="name" class="form-control" value="{{ $students->name }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Enter Email</label>
+            <input type="email" name="email" class="form-control" value="{{ $students->email }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Select Gender</label>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="gender" value="male" class="form-check-input" {{ $students->gender == 'male' ? 'checked' : '' }}>
+                <label class="form-check-label">Male</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="gender" value="female" class="form-check-input" {{ $students->gender == 'female' ? 'checked' : '' }}>
+                <label class="form-check-label">Female</label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="dob" class="form-label">DOB</label>
+            <input type="date" name="birthday" class="form-control" value="{{ $students->dob }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Select Country</label>
+            <select name="country" class="form-select">
+                <option hidden>Select</option>
+                @foreach($countries as $country)
+                <option value="{{ $country }}" {{ $students->country == $country ? 'selected' : '' }}>
+                    {{ $country }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
         @php
-        $allSkills = ['programming', 'web_design', 'database_management', 'project_management'];
+        $allSkills = ['programming', 'design', 'marketing'];
         $selectedSkills = explode(',', $students->skills);
         @endphp
 
-        <label for="skills">Select Department</label><br>
-        @foreach($allSkills as $skill)
-        <label>
-            <input type="checkbox" name="skills[]" value="{{ $skill }}"
-                {{ in_array($skill, $selectedSkills) ? 'checked' : '' }}>
-            {{ ucwords(str_replace('_', ' ', $skill)) }}
-        </label><br>
-        @endforeach
-        <br>
-        <input type="submit" value="Update">
+        <div class="mb-3">
+            <label class="form-label">Select Department</label><br>
+            @foreach($allSkills as $skill)
+            <div class="form-check">
+                <input type="checkbox" name="skills[]" value="{{ $skill }}" class="form-check-input" {{ in_array($skill, $selectedSkills) ? 'checked' : '' }}>
+                <label class="form-check-label">
+                    {{ ucwords(str_replace(' ', ',', $skill)) }}
+                </label>
+            </div>
+            @endforeach
+
+        </div>
+
+        <div class="mb-3">
+            <input type="submit" class="btn btn-success" value="Update">
+            <a href="{{ route('students-list') }}" class="btn btn-secondary">Back</a>
+        </div>
     </form>
-    <a href="{{ route('students-list') }}">
-        <button>Back</button>
-    </a>
+
 </div>

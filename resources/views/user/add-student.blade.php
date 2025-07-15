@@ -1,46 +1,55 @@
-<div>
-    <h1>Add Student</h1>
+@extends('layouts.layout')
 
+@section('title', 'Students List')
 
-    <form action="{{route('students-add')}}" enctype="multipart/form-data" method="post">
-        @csrf
-        <label for="name">Enter Name</label>
-        <input type="name" name="name" value="{{old('name')}}">
+@section('content')
+<h1 class="mb-4">Add Student</h1>
+
+<form action="{{route('students-add')}}" enctype="multipart/form-data" method="post" class="p-4 border rounded bg-light shadow-sm">
+    @csrf
+
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-control" value="{{old('name')}}">
         @error('name')
-        <div style="color: red;" class="alert alert-danger">{{ $message }}</div>
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
         @enderror
-        <br>
-        <br>
-        <label for="email">Enter Email</label>
-        <input type="email" name="email" value="{{old('email')}}">
-        @error('email')
-        <div style="color: red;" class="alert alert-danger">{{ $message }}</div>
-        @enderror
-        <br>
-        <br>
-        Select Gender
-        <br>
-        <label for="male">Male</label>
-        <input type="radio" name="gender" value="male" {{ old('gender') == 'male' ? 'checked' : '' }}>
-        <label for="female">Female</label>
-        <input type="radio" name="gender" value="female" {{ old('gender') == 'female' ? 'checked' : '' }}>
-        @error('gender')
-        <div style="color: red;" class="alert alert-danger">{{ $message }}</div>
-        @enderror
-        <br>
-        <br>
-        <label for="dob">DOB</label>
-        <input type="date" name="dob" id="dob" value="{{ old('dob') }}">
+    </div>
 
-        @error('dob')
-        <div style="color: red;" class="alert alert-danger">{{ $message }}</div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{old('email')}}">
+        @error('email')
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
         @enderror
-        <br>
-        <br>
-        <label>
-            Select country
-        </label>
-        <select name="country">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label d-block">Select Gender</label>
+        <div class="form-check form-check-inline">
+            <input type="radio" name="gender" value="male" class="form-check-input" {{ old('gender') == 'male' ? 'checked' : '' }}>
+            <label for="male" class="form-check-label">Male</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input type="radio" name="gender" value="female" class="form-check-input" {{ old('gender') == 'female' ? 'checked' : '' }}>
+            <label for="female" class="form-check-label">Female</label>
+        </div>
+        @error('gender')
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label for="dob" class="form-label">DOB</label>
+        <input type="date" name="dob" id="dob" class="form-control" value="{{ old('dob') }}">
+        @error('dob')
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Select country</label>
+        <select name="country" class="form-select">
             <option selected hidden value="0">Select</option>
             <option value="India" {{ old('country') == 'India' ? 'selected' : '' }}>India</option>
             <option value="Berlin" {{ old('country') == 'Berlin' ? 'selected' : '' }}>Berlin</option>
@@ -53,32 +62,54 @@
             <option value="San Francisco" {{ old('country') == 'San Francisco' ? 'selected' : '' }}>San Francisco</option>
         </select>
         @error('country')
-        <div style="color: red;" class="alert alert-danger">{{ $message }}</div>
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
         @enderror
-        <br>
-        <br>
+    </div>
 
-        <label for="skills">Select Department</label><br>
-        <label><input type="checkbox" name="skills[]" value="programming"> Programming</label><br>
-        <label><input type="checkbox" name="skills[]" value="web_design"> Web Design</label><br>
-        <label><input type="checkbox" name="skills[]" value="database_management"> Database Management</label><br>
-        <label><input type="checkbox" name="skills[]" value="project_management"> Project Management</label><br>
+    <div class="mb-3">
+        <label class="form-label">Select Skills:</label><br>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="skills[]" value="programming" id="programming">
+            <label class="form-check-label" for="programming">Programming</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="skills[]" value="design" id="design">
+            <label class="form-check-label" for="design">Design</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="skills[]" value="marketing" id="marketing">
+            <label class="form-check-label" for="marketing">Marketing</label>
+        </div>
         @error('skills')
-        <div style="color: red;" class="alert alert-danger">{{ $message }}</div>
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
         @enderror
-        <br>
-        <br>
-        <label for="file">Choose an Image:</label><br>
-        <input type="file" name="image" id="file" class="hidden"><br>
-                @error('image')
-        <div style="color: red;" class="alert alert-danger">{{ $message }}</div>
-        @enderror
-        <br>
-        <br>
-        <input type="submit" value="Register">
-    </form>
+    </div>
 
-    <a href="{{ route('students-list') }}">
-        <button>View Student</button>
-    </a>
-</div>
+    <div class="mb-3">
+        <label for="file" class="form-label">Choose an Image:</label>
+        <input class="form-control" type="file" id="file" name="image">
+        @error('image')
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary" >Register</button>
+        <a href="{{ route('students-list') }}" class="btn btn-secondary">Student List</a>
+    </div>
+</form>
+@endsection
+
+@push('scripts')
+<script>
+
+    setTimeout(function() {
+        let alert = document.getElementById('success-alert');
+        if (alert) {
+            alert.classList.remove('show');
+            alert.classList.add('fade');
+            setTimeout(() => alert.remove(), 500); // remove from DOM
+        }
+    }, 10000);
+</script>
+@endpush
