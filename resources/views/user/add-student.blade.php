@@ -5,7 +5,7 @@
 @section('content')
 <h1 class="mb-4">Add Student</h1>
 
-<form action="{{route('students-add')}}" enctype="multipart/form-data" method="post" class="p-4 border rounded bg-light shadow-sm">
+<form id="studentForm" enctype="multipart/form-data" method="post" class="p-4 border rounded bg-light shadow-sm">
     @csrf
 
     <div class="mb-3">
@@ -94,15 +94,16 @@
     </div>
 
     <div class="mb-3">
-        <button type="submit" class="btn btn-primary" >Register</button>
+        <button type="submit" class="btn btn-primary">Register</button>
         <a href="{{ route('students-list') }}" class="btn btn-secondary">Student List</a>
     </div>
 </form>
+
+<div id="message"></div>
 @endsection
 
 @push('scripts')
 <script>
-
     setTimeout(function() {
         let alert = document.getElementById('success-alert');
         if (alert) {
@@ -111,5 +112,28 @@
             setTimeout(() => alert.remove(), 500); // remove from DOM
         }
     }, 10000);
+
+    $('#studentForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this); //use only when you have images
+
+        $.ajax({
+            url: "{{ route('students-add') }}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                window.location.href = response.redirect;
+                // $('#message').html('<span style="color:green;">AJAX call successful!</span>');
+                // console.log("AJAX Success:", response); //confirm it worked
+            },
+            error: function(xhr) {
+                console.error("AJAX Error:", xhr.responseText);
+                // $('#message').html('<span style="color:red;">Error: ' + xhr.responseText + '</span>');
+            }
+        });
+    });
 </script>
 @endpush

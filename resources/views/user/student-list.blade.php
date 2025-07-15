@@ -13,7 +13,7 @@
 @endif
 
 
-<a href="{{ route('students.create') }}" class="btn btn-primary mb-3">Add Student</a>
+<a href="{{ route('students.create') }}" class="btn btn-primary mb-3" id="addStudentBtn">Add Student</a>
 
 <form action="{{route('students-search')}}">
     <input type="text" name="search" placeholder="Search..." value="{{ request('search')}}">
@@ -53,7 +53,7 @@
                 <td>{{ $student->country }}</td>
                 <td>
                     @foreach(explode(',', $student->skills) as $skill)
-                    <span>{{ ucwords(str_replace(' ', ',', $skill)) }}</span>
+                    <span>{{ ucwords(str_replace('_', '', $skill)) }}</span>
                     @endforeach
                 </td>
                 <td>

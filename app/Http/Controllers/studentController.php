@@ -56,8 +56,16 @@ class studentController extends Controller
         $student->image = $imagePath;
 
         $student->save();
-        session()->flash('success', 'Student registered successfully!');
-        return redirect()->route('students-list');
+        // session()->flash('success', 'Student registered successfully!');
+        // return redirect()->route('students-list');
+
+        // set flash message
+        session()->flash('success', 'Student added successfully!');
+
+        // send redirect URL in JSON
+        return response()->json([
+            'redirect' => route('students-list')
+        ]);
     }
 
 
@@ -87,7 +95,12 @@ class studentController extends Controller
 
         $student->save();
         session()->flash('success', 'Student updated successfully!');
-        return redirect()->route('students-list');
+        // return redirect()->route('students-list');
+
+        // send redirect URL in JSON
+        return response()->json([
+            'redirect' => route('students-list')
+        ]);
     }
 
     public function delete($id)
@@ -120,7 +133,7 @@ class studentController extends Controller
         $result = student::destroy($request->ids);
         if ($result) {
             session()->flash('success', 'Students deleted successfully!');
-             return redirect('list');
+            return redirect('list');
         } else {
             echo "selected student not deleted";
         }

@@ -8,7 +8,7 @@
 
 <div class="p-4 border rounded bg-light shadow-sm m-5">
 
-    <form action="{{ route('students.update', $students->id) }}" enctype="multipart/form-data" method="post">
+    <form id="editstudentForm" enctype="multipart/form-data" method="post">
         @csrf
 
         <div class="mb-3">
@@ -30,11 +30,11 @@
         <div class="mb-3">
             <label class="form-label d-block">Select Gender</label>
             <div class="form-check form-check-inline">
-                <input type="radio" name="gender" value="male" class="form-check-input" {{ $students->gender == 'male' ? 'checked' : '' }}>
+                <input type="radio" name="gender" value="male" class="form-check-input" {{ $students->gender == 'Male' ? 'checked' : '' }}>
                 <label class="form-check-label">Male</label>
             </div>
             <div class="form-check form-check-inline">
-                <input type="radio" name="gender" value="female" class="form-check-input" {{ $students->gender == 'female' ? 'checked' : '' }}>
+                <input type="radio" name="gender" value="female" class="form-check-input" {{ $students->gender == 'Female' ? 'checked' : '' }}>
                 <label class="form-check-label">Female</label>
             </div>
         </div>
@@ -80,4 +80,32 @@
         </div>
     </form>
 
+    <!-- <div id="message"></div> -->
 </div>
+
+@push('scripts')
+<script>
+ $('#editstudentForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this); //use only when you have images
+
+        $.ajax({
+            url: "{{ route('students.update', $students->id)}}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                window.location.href = response.redirect;
+                // $('#message').html('<span style="color:green;">AJAX call successful!</span>');
+                console.log("AJAX Success:", response); //confirm it worked
+            },
+            error: function(xhr) {
+                console.error("AJAX Error:", xhr.responseText);
+                // $('#message').html('<span style="color:red;">Error: ' + xhr.responseText + '</span>');
+            }
+        });
+    });
+</script>
+@endpush
