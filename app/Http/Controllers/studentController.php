@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use App\Models\ClassModel;
 use Illuminate\Http\Request;
 use App\Models\student;
+use App\Models\User;
 
 
 class studentController extends Controller
@@ -11,28 +16,33 @@ class studentController extends Controller
 
     public function create()
     {
-        return view('user.add-student');
+        $classes = ClassModel::all(); // Fetch from classes table
+        // dd($classes);
+        return view('user.add-student', compact('classes'));
     }
 
 
     function show()
     {
-        $students =  Student::orderBy('id', 'desc')->paginate(5);
+        $students =  Student::with('class')->orderBy('id', 'desc')->paginate(5);
         return view('user.student-list', ['students' => $students]);
     }
+
 
     function store(Request $request)
     {
 
         $request->validate([
             'name' => 'required|string|regex:/^[A-Za-z\s]+$/|max:255|min:3',
-            'email' => 'required|email|unique:students',
+            'email' => 'required|email|unique:students|unique:users',
             'gender' => 'required',
             'dob' => 'required',
             'country' => 'not_in:0',
             'skills' => 'required|array|min:1',
             'skills.*' => 'string',
-            'image' => 'required'
+            'image' => 'required',
+            'class_id' => 'required|exists:classes,id', // class from dropdown
+            'password' => 'required|min:6',
         ], [
             'name.required' => 'Student name is required!',
             'name.string' => 'Student name should be a valid string!',
@@ -50,21 +60,28 @@ class studentController extends Controller
         $student->dob = $request->dob;
         $student->country = $request->country;
         $student->skills = implode(',', $request->skills);
+        $student->class_id = $request->class_id;
+
 
         $image = $request->file('image');
         $imagePath = $image->store('images', 'public');
         $student->image = $imagePath;
-
+        $student->password = Hash::make($request->password);
         $student->save();
-        // session()->flash('success', 'Student registered successfully!');
-        // return redirect()->route('students-list');
+
+        // Create entry in users table for authentication
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'user'  // or null if 'user' is the default
+        ]);
 
         // set flash message
         session()->flash('success', 'Student added successfully!');
-
         // send redirect URL in JSON
         return response()->json([
-            'redirect' => route('students-list')
+            'redirect' => route('login')
         ]);
     }
 
@@ -151,5 +168,58 @@ class studentController extends Controller
     function uploadImg()
     {
         return "Image uploading";
+    }
+
+    public function studentInfo()
+    {
+        $student = Student::where('email', Auth::user()->email)->first();
+
+        return view('user.dashboard', compact('student'));
+    }
+
+    public function adminDashboard()
+    {
+        return view('admin.dashboard');
+    }
+
+    //=====for update profile------------
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $student = Student::where('email', $user->email)->first();
+
+        $request->validate([
+            'current_password' => 'required_with:new_password|nullable|string',
+            'new_password' => 'nullable|string|min:6|same:new_password_confirmation',
+            'new_password_confirmation' => 'nullable|string|min:6',
+        ]);
+
+        // Update only image if present
+        if ($student && $request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+            $student->image = $imagePath;
+            $student->save();
+        }
+
+        // Password update
+        if ($request->filled('new_password')) {
+            // Check if current password is correct
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+            }
+
+            // Update user password
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            // Update student password too if user is a regular user
+            if ($user->role === 'user' && $student) {
+                $student->password = Hash::make($request->new_password);
+                $student->save();
+            }
+        }
+
+        return back()->with('success', 'Profile updated successfully.');
     }
 }

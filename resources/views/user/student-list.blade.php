@@ -37,6 +37,7 @@
                 <th>DOB</th>
                 <th>Gender</th>
                 <th>Country</th>
+                <th>Class</th>
                 <th>Department</th>
                 <th>Profile</th>
                 <th colspan="2">Actions</th>
@@ -51,6 +52,8 @@
                 <td>{{ $student->dob }}</td>
                 <td>{{ $student->gender }}</td>
                 <td>{{ $student->country }}</td>
+               <td>{{ $student->class->class ?? 'N/A' }}</td>
+
                 <td>
                     @foreach(explode(',', $student->skills) as $skill)
                     <span>{{ ucwords(str_replace('_', '', $skill)) }}</span>

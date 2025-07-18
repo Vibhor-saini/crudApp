@@ -66,6 +66,37 @@
         @enderror
     </div>
 
+
+    <div class="mb-3">
+        <label class="form-label">Select Class</label>
+        <select name="class_id" class="form-select">
+            <option hidden value="">Select</option>
+            @foreach($classes as $class)
+            <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                {{ $class->class }}
+            </option>
+            @endforeach
+        </select>
+
+        @error('class_id')
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Select Section</label>
+        <select name="section" class="form-select">
+            <option selected hidden value="0">Select</option>
+            <option value="A" {{ old('class') == 'A' ? 'selected' : '' }}>A</option>
+            <option value="B" {{ old('class') == 'B' ? 'selected' : '' }}>B</option>
+            <option value="C" {{ old('class') == 'C' ? 'selected' : '' }}>C</option>
+        </select>
+        @error('section')
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+
     <div class="mb-3">
         <label class="form-label">Select Skills:</label><br>
         <div class="form-check">
@@ -94,8 +125,16 @@
     </div>
 
     <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <input class="form-control" type="password" id="password" name="password" required>
+        @error('password')
+        <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
         <button type="submit" class="btn btn-primary">Register</button>
-        <a href="{{ route('students-list') }}" class="btn btn-secondary">Student List</a>
+        <a href="{{ route('login') }}" class="btn btn-secondary">Login</a>
     </div>
 </form>
 
@@ -115,7 +154,6 @@
 
     $('#studentForm').on('submit', function(e) {
         e.preventDefault();
-
         let formData = new FormData(this); //use only when you have images
 
         $.ajax({
@@ -125,7 +163,9 @@
             processData: false,
             contentType: false,
             success: function(response) {
+                console.log("Redirecting to:", response.redirect);
                 window.location.href = response.redirect;
+
                 // $('#message').html('<span style="color:green;">AJAX call successful!</span>');
                 // console.log("AJAX Success:", response); //confirm it worked
             },
