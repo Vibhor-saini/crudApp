@@ -9,6 +9,10 @@ use App\Models\ClassModel;
 use Illuminate\Http\Request;
 use App\Models\student;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeMail;
+
+
 
 
 class studentController extends Controller
@@ -77,7 +81,9 @@ class studentController extends Controller
             'role' => 'user'  // or null if 'user' is the default
         ]);
 
-        // set flash message
+        Mail::to($student->email)->send(new WelcomeMail($student));
+
+        // set flash messageśś
         session()->flash('success', 'Student added successfully!');
         // send redirect URL in JSON
         return response()->json([

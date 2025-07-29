@@ -33,3 +33,6 @@ Route::middleware(['user'])->group(function () {
     Route::post('/student/update-profile', [StudentController::class, 'updateProfile'])->name('student.updateProfile');
     Route::post('/student/change-password', [StudentController::class, 'changePassword'])->name('student.changePassword');
 });
+
+//wnoa qymr wdsa remh
+//email
